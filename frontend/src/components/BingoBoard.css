@@ -1,0 +1,937 @@
+.mainbody{
+    display: grid;
+    background-color: rgba(4, 17, 58, 0.974);
+    height: 100vh;
+    width: 100%;
+}
+.callednums{
+    display: flex;
+    justify-content: flex-end;  /* Align numbers to the right */
+    align-items: center;  /* Keep them vertically centered */
+    flex-wrap: wrap; /* Prevents breaking */
+    gap: 10px; /* Space between circles */
+    width: 100%; /* Ensure full width */
+    direction: rtl; 
+}
+.numbercalldis::before {
+    content: "";
+    position: absolute;
+    width: 40px; /* Inner circle smaller */
+    height: 40px;
+    border-radius: 50%;
+    background-color: #ffffff; /* Inner circle color */
+    display: block;
+    z-index: -1; /* Behind the button text */
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2); /* Inner shadow */
+}
+.board-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+}
+.selected-time1{
+    margin-left: 20px;
+    margin-right: 0px;
+    margin-bottom: 10px;
+    margin-top: 2px;
+    color: #fff;
+}
+.selected-time2{
+    margin-left: 0px;
+    margin-right: 20px;
+    margin-bottom: 10px;
+    color: #fff;
+
+}
+.par1{
+    color: #01140f;
+}
+.current-number3{
+    margin-left: 12px;
+    margin-right: 0px;
+    border-radius: 10%;
+     font-size: large;
+     width: 8vw; /* Outer circle size */
+     height: 8vw; /* Outer circle size */
+     background: rgb(241, 247, 242);
+  /*  background-color: linear-gradient(90deg, rgb(234, 20, 95) 0%, rgba(28, 121, 9, 0.502) 43%, rgba(0,212,255,1) 100%);
+  background-color:
+     /* Make the div circular */
+     color: #007bff;
+     display: grid;
+     align-items:center;
+     justify-content: center;
+    
+     position: relative;
+     font-family: Arial, sans-serif;
+     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+.current-number3 p{
+    color: #080808;
+    font-size: 36px;
+}
+
+.current-number2{
+    margin-left: 10px;
+   margin-right: 0px;
+   
+    font-size: large;
+    width: 10vw; /* Outer circle size */
+    height: 10vw; /* Outer circle size */
+    background: rgb(12, 12, 12);
+ /*  background-color: linear-gradient(90deg, rgb(234, 20, 95) 0%, rgba(28, 121, 9, 0.502) 43%, rgba(0,212,255,1) 100%);
+ background-color:
+    /* Make the div circular */
+    color: #bac8d6;
+    display: grid;
+    align-items:center;
+    justify-content: center;
+   
+    position: relative;
+    font-family: Arial, sans-serif;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+.current-number2 p{
+    color: #f5db30b3;
+    font-size: 52px;
+    align-items: center;
+}
+.maincalldisplay{
+    display: flex;
+    justify-content: flex-end; /* Align items to the right */
+    flex-direction: row-reverse; /* Display numbers from right to left */
+    gap: 10px; /* Space between buttons */
+    width: 100%; /* Full width */
+    padding: 10px;
+}
+.numbercalldis {
+    position: relative;
+    width: 150px; /* Fixed size */
+    height: 150px;
+    border-radius: 50%; /* Outer circle */
+    color: black;
+    font-size: 40px;
+    font-weight: bold;
+    text-align: center;
+    border: 8px solid #ff9900; /* Border color */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.4); /* Soft shadow */
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+    flex-shrink: 0; /* Prevent shrinking */
+}
+
+
+
+.displaytwo{
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+}
+.pargraph1{
+    margin-left: 250px;
+    margin-top: 10px;
+}
+.current-number1{
+    margin-left: 10px;
+    margin-right: 2px;
+     margin-top: 10px;
+     width: 13vw; /* Outer circle size */
+     height: 13vw; /* Outer circle size */
+     background: rgb(12, 12, 12);
+     background-color: linear-gradient(90deg, rgb(234, 20, 187) 0%, rgba(9,9,121,0.5019257703081232) 43%, rgba(0,212,255,1) 100%);
+     /* Make the div circular */
+     display: grid;
+     grid-template-columns: repeat(1,1fr);
+     align-items: center;
+     justify-content: center;
+    
+     position: relative;
+     font-family: Arial, sans-serif;
+     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+.subnumb{
+    margin-left: 20px;
+    display: grid;
+    grid-template-columns: repeat(1,1fr);
+}
+.bingo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full viewport height */
+    text-align: center;
+    background-color: #f8f9fa; /* Optional background color */
+    position: relative; /* Important for absolute positioning of child elements */
+}
+
+.shuffle-animation {
+    display: grid;
+    grid-template-columns: repeat(15,1fr);
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    position: absolute;
+    top: 20%; /* Center vertically */
+    left: 20%; /* Center horizontally */
+    transform: translate(-50%, -50%);
+    animation: shuffle-container 2s ease-in-out infinite;/* Keep animation */
+}
+
+.bingo-ball {
+    width: 50px;
+    height: 50px;
+    background-color: #ffcc00;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
+    border: 2px solid #000;
+    animation: bounce 0.5s ease-in-out infinite alternate, rotate 2s linear infinite;
+}
+
+.shuffle-button {
+    position: absolute;
+    top: 10%; /* Place the button at the top of the screen */
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%);
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.shuffle-button:hover {
+    background-color: #0056b3;
+}
+
+/* Keyframes for bouncing balls */
+@keyframes bounce {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Keyframes for shuffle container movement */
+@keyframes shuffle-container {
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+    50% {
+        transform: translateX(-30px);
+    }
+}
+
+.current-number1 p {
+    font-size: 4rem;
+    margin: 0;
+    color: #fff; /* White text for better contrast */
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.numbers-container {
+    width: 120%;
+    display: grid;
+    grid-template-columns: repeat(15,1fr);   
+    
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-left: 25px;
+    margin-bottom: 1px;
+    font-size: large;
+    justify-content: space-between;
+}
+.bingoboard2 p{
+    justify-content: center;
+    color: #2e992e;
+    align-items: center;
+ 
+    font-size: large;
+    width: 15px;
+}
+.bingoboard2 {
+    display: flex;
+    flex-direction: column;
+    
+  
+    padding: 10px;
+  }
+  .claim{
+    justify-content: center;
+  }
+.claim p{
+    color: #01140f;
+    align-items: center;
+    justify-content: center;
+    margin-top: 50px;
+    margin-bottom: 20px;
+    margin-left: 120px;
+    font-size: larger;
+}
+.claiminput input{
+    margin-left: 150px;
+    height: 30px;
+    border-radius: 5%;
+    border-color: #2e992e;
+    width: 50%;
+}
+.Cheack button{
+    background-color: #1b5fe78e;
+    width: 40%;
+    height: 50px;
+    border-radius: 20%;
+    margin-left: 160px;
+    margin-top: 20px;
+}
+.popup {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    background-color: rgba(0, 0, 0, 0.5); /* Black background with opacity */
+    display: flex; /* Use flexbox */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+  }
+  
+  /* Pop-up content styles */
+  .popup-content {
+    background-color: rgb(241, 240, 246); /* White background */
+    border-radius: 8px; /* Rounded corners */
+    padding: 20px;
+    width: 90%; /* Responsive width */
+    height: 300px;
+    max-width: 600px; /* Max width */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow effect */
+  }
+  
+  /* Title styles */
+  .popup-content h3 {
+    text-align: center; /* Center the title */
+    margin-bottom: 20px; /* Space below title */
+  }
+  .language-select{
+    justify-content: center;
+    margin-left: 50%;
+  }
+  .winboard{
+    background-color: #ea1111;
+  }
+  /* Pop-up container styles */
+  .popupw {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    background-color: rgba(0, 0, 0, 0.5); /* Black background with opacity */
+    display: flex; /* Use flexbox */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+  }
+  
+  /* Pop-up content styles */
+  .popup-contentw {
+    background-color: rgb(241, 240, 246); /* White background */
+    border-radius: 8px; /* Rounded corners */
+    padding: 20px;
+    width: 90%; /* Responsive width */
+    max-width: 600px; /* Max width */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow effect */
+  }
+  
+  /* Title styles */
+  .popup-contentw h3 {
+    text-align: center; /* Center the title */
+    margin-bottom: 20px; /* Space below title */
+  }
+  
+  /* Grid layout styles */
+  .gridw {
+    display: grid; /* Use grid layout */
+    grid-template-columns: repeat(5, 1fr); /* Six columns */
+    gap: 10px; /* Space between grid items */
+  }
+  .bingoboard2w {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(5, 1fr);
+  
+    padding: 10px;
+  }
+  .playCartelaw {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(5, 1fr);
+    padding: 10px;
+  width: 300px;
+    display: grid;
+    
+    
+    
+      
+  }
+  
+  .playCartela3w .boxes {
+    background-color: #b70443f1;
+    height: 35px;
+    width: 45px;
+    border-radius: 10%;
+    color: #f8f5f5;
+    margin-top: 5px;
+    font-size: 12px;
+    padding: 5px;
+    
+  }
+  
+  .playCartela3w{
+    display: grid; /* Use grid layout */
+    grid-template-columns: repeat(5, 1fr); /* Six columns */
+    gap: 10px;
+   /*  display: grid;
+     
+      grid-template-columns: repeat(5,1fr);
+      gap: 10px; /* Space between cells */
+     /* Width of the card */
+      /* 
+      padding: 20px; 
+    
+      gap: 10px;
+      
+      border-radius: 10px;  */
+      
+      /* Rounded corners */
+  }
+  
+  
+.Colum{
+    width: 10%;
+    display: grid;
+    grid-template-columns: repeat(1,1fr);   
+    
+    flex-wrap: wrap;
+    gap: 12px;
+    border-radius: 50%;
+    margin-left: 25px;
+ 
+    justify-content: space-between;
+  
+}
+.button-containerw {
+    display: flex; /* Use flexbox for horizontal alignment */
+    justify-content: space-between; /* Distribute space evenly between buttons */
+    align-items: center; /* Align items vertically in the center */
+    gap: 10px; /* Optional: Add space between the buttons */
+    padding: 10px; /* Optional: Add some padding around the container */
+}
+.closebtn{
+    background-color: #fb4c0df1;
+    width: 25%; 
+    border-radius: 15px;
+    height: 35px;
+}
+.otherbtn{
+    background-color: #41fb0df1;
+    width: 25%; 
+    border-radius: 15px;
+    height: 35px;
+}
+.backbtn{
+    background-color: #040b01f1;
+    width: 25%; 
+    border-radius: 15px;
+    color: white;
+    height: 35px; 
+}
+.Colum button{
+    border-radius: 50%;
+}
+.cartela {
+    width:70px;
+    height: 30px;
+    padding: 0px;
+    background-color: #161716ed;
+    color: white;
+    border: none;
+ 
+    cursor: pointer;
+    text-align: center;
+    font-size: 1rem;
+    margin-bottom: 5px;
+}
+
+.number-button:hover {
+    background-color:rgb(66, 168, 66);
+    font-size: 2rem;
+}
+.current-number {
+    width: 13vw; /* Outer circle size */
+    height: 13vw; /* Outer circle size */
+    background: rgb(19, 19, 27);
+    background-color: linear-gradient(90deg, rgb(162, 158, 226) 0%, rgba(9,9,121,0.5019257703081232) 43%, rgba(0,212,255,1) 100%);
+    border-radius: 50%; /* Make the div circular */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 10px;
+    margin-right: 15px;
+    position: relative;
+    font-family: Arial, sans-serif;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Shadow around the circle */
+}
+
+/* Inner circle */
+.inner-circle {
+    width: 60%; /* Adjust size to decrease the inner circle */
+    height: 60%; /* Adjust size to decrease the inner circle */
+    background-color: #4c7d7975; /* Inner circle color */
+    border-radius: 50%; /* Make it circular */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Text styling */
+.current-number h2 {
+    font-size: 1rem;
+    margin: 0;
+    color: #fff; /* White text for better contrast */
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.current-number p {
+    font-size: 2.5rem;
+    margin-top: 10px;
+    color: #fff; /* White text for better contrast */
+    font-weight: bold;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Light text shadow for effect */
+}
+.playboard{
+    background-color: rgba(0, 0, 0, 0);
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    grid-template-columns: 30% 50% 20%;
+    height: 20vh;
+}
+.comandboards{
+    margin-left: 20px;
+    margin-right: 20px;
+
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    background-color: rgba(4, 17, 58, 0.974);
+}
+
+.start_button{
+    background-color: rgb(228, 223, 235);
+    
+    width: 70%;
+   margin-left: 2px;
+   margin-top: 2px;
+   margin-right: 0px;
+   height: 45px;
+   
+   margin-bottom: 2px;
+   border-radius: 25px;
+   color: rgb(8, 8, 8);
+   font-size: large;
+   
+}
+.puse_button{
+    background-color: rgb(236, 234, 245);
+    
+    width: 70%;
+   margin-left: 10px;
+   margin-top: 2px;
+   height: 45px;
+   margin-bottom: 2px;
+   border-radius: 25px;
+   color: rgb(14, 14, 14);
+   font-size: large; 
+}
+.claim_button{
+    background-color: rgb(240, 238, 236);
+    
+    width: 70%;
+   margin-left: 70px;
+   margin-top: 2px;
+   margin-top: 10px;
+   height: 45px;
+   margin-bottom: 2px;
+   border-radius: 25px;
+   margin-left: 10px;
+   color: rgb(14, 14, 14);
+
+   font-size: large;
+}
+.chekinput{
+    height: 35px;
+    margin-top: 10px; 
+    margin-left: 10px; 
+    
+}
+.Next_button{
+    background-color: rgb(244, 246, 246);
+    width: 70%;
+    margin-left: 2px;
+    margin-top: 2px;
+    height: 45px;
+    margin-bottom: 2px;
+    border-radius: 25px;
+    color: black;
+    font-size: large;
+}
+.Next_button1{
+    background-color: rgb(121, 27, 74);
+    width: 70%;
+    margin-left: 90px;
+    margin-top: 2px;
+    height: 45px;
+    margin-bottom: 2px;
+    border-radius: 25px;
+    color: rgb(236, 231, 231);
+    font-size: large;
+}
+.Next_shuffle{
+    background-color: #ffcc00;
+    width: 70%;
+    margin-left: 70px;
+    margin-top: 25px;
+    height: 50px;
+    margin-bottom: 5px;
+    border-radius: 25px;
+    color: black;
+    font-size: large;
+}
+.Leav_button{
+    background-color: rgb(238, 234, 235);
+    width: 70%;
+    margin-left: 10px;
+    margin-right: 0px;
+    margin-top: 2px;
+    height: 45px;
+    margin-bottom: 2px;
+    border-radius: 25px;
+    color: rgb(9, 9, 9);
+    font-size: large;
+}
+.dropdown {
+    position: relative;
+    width: 300px; /* Set the width of the dropdown */
+    font-family: Arial, sans-serif;
+    margin-left: 50px;
+    margin-right: 50px;
+    margin-top: 2px;
+}
+.dropdown-container {
+    width: 50%;
+    margin-top: 2px;
+    margin: 20px auto;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    justify-content: center;
+    position: relative;
+}
+
+/* Dropdown Toggle Button */
+.dropdown-toggle {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    margin-top: 2px;
+    cursor: pointer;
+    border: 2px solid #007bff;
+    border-radius: 5px;
+    background-color: white;
+    color: #007bff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Dropdown Toggle Hover */
+.dropdown-toggle:hover {
+    background-color: #f0f8ff;
+}
+
+/* Arrow Styling */
+.arrow {
+    margin-left: 10px;
+    transition: transform 0.3s ease;
+}
+
+.arrow.open {
+    transform: rotate(180deg);
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+    list-style-type: none;
+    padding: 0;
+    margin: 5px 0 0 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    position: absolute;
+    margin-top: 2px;
+    width: 100%;
+    z-index: 100;
+}
+
+/* Dropdown Item */
+.dropdown-item {
+    width: 100%;
+    padding: 10px;
+    text-align: left;
+    font-size: 14px;
+    background-color: white;
+    border: none;
+    cursor: pointer;
+    color: #333;
+    transition: background-color 0.3s ease;
+}
+
+/* Dropdown Item Hover */
+.dropdown-item:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+/* Selected Time */
+.selected-time {
+    margin-top: 10px;
+    font-size: 22px;
+    color: #fff;
+    margin-bottom: 10px;
+}
+.dropdown-header {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+    border-radius: 40px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-list {
+    position: absolute;
+    top: 35%; /* Position it below the header */
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 40px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 1000; /* Ensure dropdown appears above other elements */
+}
+.dropdown h3{
+    font-size: medium;
+}
+.dropdown-item {
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.7s;
+
+}
+.countdown{
+    margin-left: 10px;
+    margin-right: 0px;
+    
+     font-size: large;
+     width: 6vw; /* Outer circle size */
+     height: 6vw; /* Outer circle size */
+     background: rgb(12, 12, 12);
+  /*  background-color: linear-gradient(90deg, rgb(234, 20, 95) 0%, rgba(28, 121, 9, 0.502) 43%, rgba(0,212,255,1) 100%);
+  background-color:
+     /* Make the div circular */
+     color: #bac8d6;
+     display: grid;
+     align-items:center;
+     justify-content: center;
+    
+     position: relative;
+     font-family: Arial, sans-serif;
+     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+.countdown p{
+    color: #ece6e6;
+    font-size: 72px;
+}
+.dropdown-item:hover {
+    background-color: #ec3636; /* Change background color on hover */
+    border-radius: 40px;
+}
+.realtime{
+    margin-left: 30px;
+    display: flex;
+flex-direction: row;
+}
+.arrow {
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #333; /* Arrow color */
+    transition: transform 0.2s;
+}
+
+.arrow.open {
+    transform: rotate(180deg); /* Rotate arrow when dropdown is open */
+}
+.net-pay1{
+    margin-right: 10px;
+    justify-self: end;
+    width: 13vw; /* Outer circle size */
+    height: 13vw; /* Outer circle size */
+    background: rgb(236, 95, 7);
+    background-color: linear-gradient(90deg, rgb(162, 158, 226) 0%, rgba(9,9,121,0.5019257703081232) 43%, rgba(0,212,255,1) 100%);
+    border-radius: 50%; /* Make the div circular */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 50px;
+    margin-right: 5px;
+    position: absolute;
+    font-family: Arial, sans-serif;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Shadow around the circle */
+    margin-left: 150px;
+    margin-top: 25px;
+}
+.net-pay2{
+    
+    width: 60%; /* Adjust size to decrease the inner circle */
+    height: 60%; /* Adjust size to decrease the inner circle */
+    background-color: #dfe2df; /* Inner circle color */
+    border-radius: 50%; /* Make it circular */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.net-pay2 p{
+    color: black;
+}
+/* Define the keyframes for the bounce animation */
+@keyframes shuffle-container {
+    0% {
+        transform: translateY(0);
+    }
+    20% {
+        transform: translateY(-30px);
+    }
+    40% {
+        transform: translateY(15px);
+    }
+    60% {
+        transform: translateY(-15px);
+    }
+    80% {
+        transform: translateY(7px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+/* Keyframes for scattering */
+@keyframes scatter-drop {
+    0% {
+        transform: translateY(-100px) translateX(0) rotate(0deg) scale(1);
+        opacity: 0;
+    }
+    50% {
+        transform: translateY(200px) translateX(50px) rotate(180deg) scale(1.2);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateY(400px) translateX(-30px) rotate(360deg) scale(1);
+        opacity: 1;
+    }
+}
+
+/* Base style for scattered items */
+.scatter {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-color: gold;
+    border-radius: 50%;
+    animation: scatter-drop 2s ease-out infinite;
+    opacity: 0;
+}
+
+/* Randomize animation delay for different items */
+.scatter:nth-child(1) {
+    animation-delay: 0s;
+    transform: translateX(-100px);
+}
+.scatter:nth-child(2) {
+    animation-delay: 0.2s;
+    transform: translateX(50px);
+}
+.scatter:nth-child(3) {
+    animation-delay: 0.4s;
+    transform: translateX(-200px);
+}
+.scatter:nth-child(4) {
+    animation-delay: 0.6s;
+    transform: translateX(150px);
+}
+.scatter:nth-child(5) {
+    animation-delay: 0.8s;
+    transform: translateX(30px);
+}
+
+  canvas {
+    
+    margin-top: 10%;
+    margin-right: 250px;
+    margin-left: 250px;
+    transform: translate(-5%, -5%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 75%;
+    height: 75%;
+    pointer-events: none; /* Allow interactions with other elements */
+  }
+  
+  
