@@ -116,7 +116,7 @@ const BingoBoard = () => {
      const [language, setLanguage] = useState(() => {
         const storedLanguage = localStorage.getItem('language');
        // console.log('Initial Language from localStorage:', storedLanguage); // Debugging log
-        return storedLanguage || 'am';
+        return storedLanguage || 'amm';
     });
     const [selectedOption, setSelectedOption] = useState(() => {
         const savedTime = typeof window !== 'undefined' ? localStorage.getItem('selectedTime') : null;
@@ -476,7 +476,7 @@ useEffect(() => {
                setflag(1);
                
                // Audio handling
-               if (language === "am") {
+              /* if (language === "am") {
                    const start = getGameStartedAudi();
                    await start.play();
                    await new Promise(resolve => { start.onended = resolve; });
@@ -489,7 +489,7 @@ useEffect(() => {
                else {
                    const utterance = new SpeechSynthesisUtterance("Game started");
                    window.speechSynthesis.speak(utterance);
-               }
+               }*/
                
                // Short delay for UX (reduced from 2000ms)
                await new Promise(resolve => setTimeout(resolve, 500));

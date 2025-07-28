@@ -31,13 +31,13 @@ function App() {
       <Router>
         <Routes>
         
-          
+          <Route path="/" element={<Logins/>}/>
          
           <Route path="/qazxsw" element={<AdminSignup/>}/>
            <Route path="/AdminPasswordReset" element={<AdminPasswordReset/>}/>
           
           <Route path="/Logins"  element={<Logins/>}/>
-          <Route path="/" element={<Signups /> }/>
+          <Route path="/signups" element={<Signups /> }/>
           {/* protected toutes*/ }
           <Route element={<ProtectedRoute/>}>
           <Route path="/Dashbord" element={<Dashbord/>}/>
