@@ -75,10 +75,10 @@ app.use(cors({
 }));
 
 
-console.log("json update");
+/*console.log("json update");
 console.log('Loaded JWT_PRIVATE:', process.env.JWT_PRIVATE);
 console.log('Full ENV:', process.env);
-console.log("enviroment updated");
+console.log("enviroment updated");*/
 app.use(cors({
   origin: function (origin, callback) {
     // Allow requests with no 'origin' (e.g., mobile apps, Postman)
