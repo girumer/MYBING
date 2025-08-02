@@ -24,6 +24,7 @@ const [amount,setAmount]=useState(0);
 
 
 const [wallet,setWallet]=useState(0);
+const [coin,setCoin]=useState(0);
 useEffect(() => {
   const token = localStorage.getItem('accesstoken');
   
@@ -64,6 +65,7 @@ async function checkpoint(){
         .then(res=>{
             
           setWallet(res.data.balance);
+          setCoin(res.data.coin);
             //setcurrentCoin(res.data);
         })
         .catch(e=>{
@@ -93,6 +95,14 @@ async function checkpoint(){
           <FontAwesomeIcon icon={faPlay} className="play-icon" />
           <span > {wallet}</span>
         </button>
+        <div className="welcome-text">
+            <p>Here is your remaining coin </p>
+        <button className="play-btn">
+          <FontAwesomeIcon icon={faPlay} className="play-icon" />
+          
+           <span > {coin}</span>
+           </button>
+        </div>
       </div>
   </React.Fragment>
   )

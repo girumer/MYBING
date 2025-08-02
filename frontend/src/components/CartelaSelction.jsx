@@ -18,6 +18,7 @@ function CartelaSelction() {
         }
         return 0.2;
       });
+      
       const percentoptions = [
         { label: "15%", value: 0.15 },
         { label: "20%", value: 0.2 },

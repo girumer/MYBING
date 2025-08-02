@@ -1,6 +1,5 @@
 require('dotenv').config({ path: require('path').resolve(__dirname, '.env') });
-console.log('ENV Path:', require('path').resolve(__dirname, '.env'));
-console.log('All ENV:', process.env);
+
 const express = require("express")
 const async = require('async');
 
@@ -17,6 +16,7 @@ const gameHistoryRoutes = require('../routes/gameHistory');
 const depositRoutes = require('../routes/depositRoutes');
 const adminRoutes = require("../routes/adminRoutes");
 const reportRoutes = require('../routes/reportRoutes');
+const prizeRoutes = require("../routes/prizeRoutes");
 const path = require('path');
 const secretkey=process.env.JWT_SECRET;
 const refreshKey=process.env.JwT_PRIVATE;
@@ -74,11 +74,6 @@ app.use(cors({
   credentials: true,
 }));
 
-
-/*console.log("json update");
-console.log('Loaded JWT_PRIVATE:', process.env.JWT_PRIVATE);
-console.log('Full ENV:', process.env);
-console.log("enviroment updated");*/
 app.use(cors({
   origin: function (origin, callback) {
     // Allow requests with no 'origin' (e.g., mobile apps, Postman)
@@ -216,6 +211,7 @@ app.use('/api', gameHistoryRoutes);
 app.use('/api', depositRoutes);
 app.use('/api', alluserRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/prize", prizeRoutes);
 app.post("/deleteuser",async(req,res)=>{
     const{username}=req.body
   
@@ -385,6 +381,9 @@ app.post("/depositcheckB",async(req,res)=>{
   }
 
 })    
+// POST /api/savePrize
+
+
 app.get("/dashboard", verfyuser, async (req, res) => {
   console.log("Dashboard route hit");
   try {
@@ -396,6 +395,38 @@ app.get("/dashboard", verfyuser, async (req, res) => {
     return res.status(500).json({ valid: false, message: "Error fetching users" });
   }
 });
+app.post('/prize', async (req, res) => {
+  const { username, prize } = req.body;
+  console.log("update user hit", username, prize);
+
+  if (!username || typeof prize !== 'number') {
+    return res.status(400).json({ message: "Invalid input" });
+  }
+
+  try {
+    // Push new prize record to prize array
+    const user = await BingoBord.findOneAndUpdate(
+      { username },
+      { 
+        $push: { prize: { amount: prize, timestamp: new Date() } },
+          $set: { coin: 0 }
+      },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ message: "Prize updated successfully", newPrize: user.prize });
+  } catch (err) {
+    console.error("Error updating prize:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
+
 /* app.get("/dashboard",verfyuser,async(req,res)=>{
   //const{username,password}=req.body
      
@@ -405,8 +436,13 @@ app.get("/dashboard", verfyuser, async (req, res) => {
     
 }) */
 app.post("/updateplayer", async (req, res) => { 
-  const { username,stake,numberofplayer,profit,awardforagent,totalcash,venderaward,winerAward,percent } = req.body;
-
+  console.log("Updateplayer route hit");
+  console.log("username from req.body:", req.body.username);
+  const { username,stake,numberofplayer,profit,awardforagent,totalcash,venderaward,winerAward,percent,coin } = req.body;
+if (!username) {
+    console.error("Missing username in request body");
+    return res.status(400).json({ error: "username is required" });
+  }
   const data = {
       username: username,
       numberofplayer:numberofplayer,
@@ -416,7 +452,8 @@ app.post("/updateplayer", async (req, res) => {
       venderaward: venderaward,
       winerAward:winerAward,
       awardforagent:awardforagent,
-      percent:percent
+      percent:percent,
+      coin:coin
   };
 
   try {
@@ -424,6 +461,7 @@ app.post("/updateplayer", async (req, res) => {
       const check = await BingoBord.findOne({ username: username });
      // console.log("user is ",check);
         console.log("winer awared is ",winerAward);
+        console.log("user coin is ",coin);
       if (check) {
        // Retrieve the last gameId from gameHistory if it exists, otherwise start from 0
 let depo1 = (check.gameHistory.length > 0) 
@@ -434,9 +472,10 @@ let depo1 = (check.gameHistory.length > 0)
           const PayeForVendor = venderaward;
           
           const waletdeuction = -venderaward;
+          const coininc=coin;
           const filter = { username:  username };
           const update = {
-              $inc: { Wallet: waletdeuction }, // Deduct from Wallet
+              $inc: { Wallet: waletdeuction ,coin:coininc}, // Deduct from Wallet
              
               $push: { 
                   gameHistory: { 
@@ -449,6 +488,7 @@ let depo1 = (check.gameHistory.length > 0)
                       winerAward: winerAward,
                       totalcash: totalcash,
                       percent:percent,
+                      coin:coin,
                       timestamp: new Date()
                   } 
               } // Push new game history entry

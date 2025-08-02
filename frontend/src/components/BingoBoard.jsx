@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback,useRef } from 'react';
 import axios from "axios";
 import './BingoBoard.css';
+import Spinner from './Spinner'; 
 import Navbar from '../components/Navbar';
 import cartela from './cartela.json';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -10,17 +11,79 @@ import confetti from "canvas-confetti";
 const BingoBoard = () => {
     const location=useLocation();
     const navigate=useNavigate();
-  
+        const [username, setUser] = useState(null);
     const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
         const token = localStorage.getItem('accesstoken');
-       
-     
-    
+       const [triggerSpin, setTriggerSpin] = useState(false);
+const [spinResult, setSpinResult] = useState(null);
+     const [coinawre, setCoinaward] = useState(0);
+  const coinRef = useRef(0); 
+     // ✅ Fetch coin from database on component mount
+console.log("triger spin is ",triggerSpin);
+  useEffect(() => {
+  const token = localStorage.getItem('accesstoken');
   
+  if (!token) {
+    alert("User not found");
+  } else {
+    axios.post(`${BACKEND_URL}/useracess`, {}, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then(res => {
+      const username = res.data.username;
+      setUser(username);
+    })
+    .catch(err => {
+      console.error("Error:", err);
+      alert("Failed to verify user");
+    });
+  }
+}, []);
+useEffect(() => {
+  if (username) {
+    console.log("✅ Username is set:", username);
+    checkpoint(); // Now safe
+  } else {
+    console.warn("⛔ Username not yet loaded. Skipping checkpoint.");
+  }
+}, [username]);
+
    const isGeneratingRef = useRef(false);
     const isPusedRef=useRef(false);
-    
+  
+ 
 
+   async function checkpoint(){
+    if (!username) {
+    console.warn("🚫 No username — aborting checkpoint.");
+    return;
+  }
+      
+      try{
+           console.log("Backend URL is", BACKEND_URL);
+          await axios.post(`${BACKEND_URL}/api/depositcheckB`,{
+              username
+          })
+          .then(res=>{
+              
+            
+            setCoinaward(res.data.coin);
+              //setcurrentCoin(res.data);
+          })
+          .catch(e=>{
+              alert("wrong details", username)
+              console.log(e);
+          })
+  
+      }
+      catch(e){
+          console.log(e);
+  
+      }
+  }
+   console.log("coin is currently",coinawre);
     const [isnavbar,setNavbar]=useState(true);
     const [numberofplayer,setNumberofPlayer]=useState(0);
     const [result,setresult]=useState(" ");
@@ -31,8 +94,9 @@ const BingoBoard = () => {
     });
    // const [gamestart,setgamestart]=useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
+   
     const [letter,setleter]=useState("-")
-    const [username, setUser] = useState(null);
+
     const [winerAward, setWinerAward] = useState(0);
     const [fireworklun,setfireworklun]=useState(false);
     const lastCalledNumberRef = useRef(null);
@@ -135,6 +199,7 @@ const BingoBoard = () => {
       const interval = selectedOption;
       const [isShuffling, setIsShuffling] = useState(false);
       const [profit,setprofit]=useState(0);
+       const [coin, setcoin] = useState(0);
       const audioRef = useRef(null);
       const handleShuffle = () => {
         // Play shuffle voice
@@ -221,6 +286,7 @@ const BingoBoard = () => {
     const stake = location.state?.stake || 0;
     const gametype=location.state?.selectegametype||1;
     const percent=location.state?.selectedpercent||0.2;
+   
   //  console.log("percent is",percent);
    // console.log("game type is",gametype);
     let intialstate=cartela[cartes].cart;
@@ -267,16 +333,22 @@ const BingoBoard = () => {
         const percentdeduction=1-percent;
         const final = totalcash * percentdeduction;
         const award=totalcash*percent;
+        
         const vendor=totalcash * percent;
+       
         const awardforagen=award-vendor;
+        const amount= vendor * 0.05;
+     
         setNumberofPlayer(numberofplayer);
         setWinerAward(final);
-        setprofit(award)
+        setprofit(award);
+        setcoin(amount)
         setvenderaward(vendor);
         setTotalcash(totalcash);
         setawardforagent(awardforagen);
+          
     };
-    
+
 // Stop function
 const handleStop = async () => {
     if (language === "am") {
@@ -288,7 +360,11 @@ const handleStop = async () => {
      else if (language === "amf") {
         const pusef=getGamePusedAudiof();
         pusef.play();}
-        
+        else if (language === "amm") {
+        const pusef=getGamePusedAudiom();
+        pusef.play();
+       
+    }
      else {
         const message2="Gamepused";
         window.speechSynthesis.speak(message2);
@@ -519,6 +595,13 @@ useEffect(() => {
        
 
     }
+     const gameisnotm=()=>{
+        const aler=getcartelanotm();
+        aler.play();
+        
+       
+
+    }
   //  console.log("the value of game start is ",gamestart)
     const getshuffle=()=>{
         const audio = new Audio();
@@ -658,6 +741,23 @@ useEffect(() => {
           
             
         }
+          if(language=="amm"){
+            const started="started"
+            const gameStartedAudio = getGameStartedAudiom();
+              
+            gameStartedAudio.play();
+            setTimeout(() => {
+                setNavbar(false);
+                if (!isGeneratingRef.current) {
+                  startRandomNumberGenerator(); // ✅ Resumes from last index
+                }
+              }, 1000); 
+                  //startRandomNumberGenerator();
+                  
+            
+          
+            
+        }
         else{
         const utterance = new SpeechSynthesisUtterance("Game Started");
         window.speechSynthesis.speak(utterance);
@@ -685,6 +785,11 @@ useEffect(() => {
         audio.preload = "auto"; // Preload to reduce delay
        return audio;
     }
+    const getcartelanotm=()=>{
+        const audio= new Audio('/gamestatusmale/number_is_not.mp3');
+        audio.preload = "auto"; // Preload to reduce delay
+       return audio;
+    }
     const getGameWining=()=>{
         const audio=new Audio();
         audio.src=`gamestatus/the_player_win.mp3`;
@@ -695,6 +800,13 @@ useEffect(() => {
     const  getGameWiningfeamel=()=>{
         const audio=new Audio()
         audio.src=`/gamestatusfemale/the_player_win.mp3`;
+        audio.load();
+       // Preload to reduce delay
+       return audio;
+    }
+    const  getGameWiningmeamel=()=>{
+        const audio=new Audio()
+        audio.src=`/gamestatusmale/the_player_win.mp3`;
         audio.load();
        // Preload to reduce delay
        return audio;
@@ -714,6 +826,14 @@ useEffect(() => {
          // Preload to reduce delay
        return audio;
     }
+    const playerNotwinm=()=>{
+        const audio=new Audio();
+        audio.src=`/gamestatusmale/notwin.mp3`;
+        
+        audio.load();
+         // Preload to reduce delay
+       return audio;
+    }
     const getGamePusedAudio=()=>{
         const audio=new Audio();
         audio.src=`/gamestatus/gamepused.mp3`;
@@ -724,6 +844,13 @@ useEffect(() => {
     const getGamePusedAudiof=()=>{
         const audio=new Audio();
          audio.src=`/gamestatusfemale/gamepused.mp3`;
+       
+        audio.load();
+        return audio;
+    }
+    const getGamePusedAudiom=()=>{
+        const audio=new Audio();
+         audio.src=`/gamestatusmale/gamepused.mp3`;
        
         audio.load();
         return audio;
@@ -742,10 +869,21 @@ useEffect(() => {
         audio.load(); // Preload to reduce delay
         return audio;
     };
+     const getGameStartedAudiom = () => {
+        const audio=new Audio();
+        audio.src=`/gamestatusmale/gameresume.mp3`;
+     
+        audio.load(); // Preload to reduce delay
+        return audio;
+    };
     async function updateplayer() {
+        if (!username) {
+    console.error("Username is not defined, cannot update player");
+    return;
+  }
         try {
             const response = await axios.post(`${BACKEND_URL}/updateplayer`, {
-                username, stake, numberofplayer, profit, awardforagent, totalcash, venderaward, winerAward, percent
+                username, stake, numberofplayer, profit, awardforagent, totalcash, venderaward, winerAward, percent,coin
             });
           //  console.log(response.data);
             if (response.data === "exist") {
@@ -817,13 +955,16 @@ useEffect(() => {
                         } else if (language === "amf") {
                             playAmharicAudioForNumberfemale(number);
                         }
+                        else if (language === "amm") {
+                            playAmharicAudioForNumbermemale(number);
+                        }
                         setTimeout(resolve, 2000); // Simulate audio duration
                     });
                 };
     
                 (async () => {
                     if (number <= 15) {
-                        if (language === "am" || language === "amf") {
+                        if (language === "am" || language === "amf" || language === "amm") {
                             await playAmharicAudio(number);
                         } else {
                             if (number >= 10) {
@@ -833,25 +974,25 @@ useEffect(() => {
                             }
                         }
                     } else if (number <= 30) {
-                        if (language === "am" || language === "amf") {
+                        if (language === "am" || language === "amf" || language === "amm") {
                             await playAmharicAudio(number);
                         } else {
                             await announceDigits("I", number);
                         }
                     } else if (number <= 45) {
-                        if (language === "am" || language === "amf") {
+                        if (language === "am" || language === "amf" || language === "amm") {
                             await playAmharicAudio(number);
                         } else {
                             await announceDigits("N", number);
                         }
                     } else if (number <= 60) {
-                        if (language === "am" || language === "amf") {
+                        if (language === "am" || language === "amf" || language === "amm") {
                             await playAmharicAudio(number);
                         } else {
                             await announceDigits("G", number);
                         }
                     } else {
-                        if (language === "am" || language === "amf") {
+                        if (language === "am" || language === "amf" || language === "amm") {
                             await playAmharicAudio(number);
                         } else {
                             await announceDigits("O", number);
@@ -984,6 +1125,26 @@ const shuffleArray = (array) => {
         return Promise.reject(new Error('Number out of range'));
     }
 };
+ const playAmharicAudioForNumbermemale = (number) => {
+    if (number >= 1 && number <= 75) {
+        try {
+            const audio = new Audio(`/amharicmale/${number}.mp3`);
+            // For older browsers, using simpler event-based approach
+            return new Promise((resolve, reject) => {
+                audio.oncanplaythrough = () => {
+                    audio.play().then(resolve).catch(reject);
+                };
+                audio.onerror = reject;
+            });
+        } catch (err) {
+            console.error('Error playing female audio:', err);
+            return Promise.reject(err);
+        }
+    } else {
+        console.error('Number out of range');
+        return Promise.reject(new Error('Number out of range'));
+    }
+};
     const cheakwin = async (initialState, num) => {
         const calledNumbers = calledNumbersRef.current;
         const lastCalledNumber = lastCalledNumberRef.current;
@@ -993,7 +1154,11 @@ const shuffleArray = (array) => {
                 gameisnot();
             } else if (language == "amf") {
                 gameisnotf();
-            } else {
+            } 
+            else if (language == "amm") {
+                gameisnotm();
+            } 
+            else {
                 const utterance = new SpeechSynthesisUtterance("the number is not in the list");
                 window.speechSynthesis.speak(utterance);
             }
@@ -1003,9 +1168,20 @@ const shuffleArray = (array) => {
                 if (initialState[i].every((num) => calledNumbers.includes(num) || num === '*')) {
                     // Ensure the last called number is part of this row
                     if (initialState[i].includes(lastCalledNumber)) {
-                        // Handle win logic for rows
-                        handleWinLogic(initialState[i], "row", i);
-                        return;
+                        // Handle win logic for rows setTriggerSpin(true);
+                        if(coinawre>=100){
+                          setTriggerSpin(true);
+      // 🔹 Then after 5 seconds: handle the win logic
+      setTimeout(() => {
+        handleWinLogic(initialState[i], "row", i);
+        setTriggerSpin(false);
+      }, 5000);
+                      //  handleWinLogic(initialState[i], "row", i);
+                        return;}
+                        else{
+                            handleWinLogic(initialState[i], "row", i);
+                            return;
+                        }
                     }
                 }
             } 
@@ -1017,8 +1193,22 @@ const shuffleArray = (array) => {
                     // Ensure the last called number is part of this column
                     if (initialState.some((row) => row[i] === lastCalledNumber)) {
                         // Handle win logic for columns
-                        handleWinLogic(initialState.map((row) => row[i]), "column", i);
-                        return;
+                     
+
+
+                          if(coinawre>=100){
+                          setTriggerSpin(true)
+      // 🔹 Then after 5 seconds: handle the win logic
+      setTimeout(() => {
+         handleWinLogic(initialState.map((row) => row[i]), "column", i);
+        setTriggerSpin(false);
+      }, 5000);
+                      //  handleWinLogic(initialState[i], "row", i);
+                        return;}
+                        else{
+                            handleWinLogic(initialState.map((row) => row[i]), "column", i);
+                            return;
+                        }
                     }
                 }
             } 
@@ -1034,8 +1224,19 @@ const shuffleArray = (array) => {
                     // Ensure the last called number is part of this diagonal
                     if (diagonal.includes(lastCalledNumber)) {
                         // Handle win logic for diagonals
-                        handleWinLogic(diagonal, "diagonal");
-                        return;
+                        if(coinawre>=100){
+                          setTriggerSpin(true);
+      // 🔹 Then after 5 seconds: handle the win logic
+      setTimeout(() => {
+         handleWinLogic(diagonal, "diagonal");
+        setTriggerSpin(false);
+      }, 5000);
+                      //  handleWinLogic(initialState[i], "row", i);
+                        return;}
+                        else{
+                             handleWinLogic(diagonal, "diagonal");
+                            return;
+                        }
                     }
                 }
             }
@@ -1049,9 +1250,22 @@ const shuffleArray = (array) => {
                 if (corner.every((num) => calledNumbers.includes(num) || num === '*')) {
                     // Ensure the last called number is part of this corner
                     if (corner.includes(lastCalledNumber)) {
-                        // Handle win logic for corners
-                        handleWinLogic(corner, "corner");
-                        return;
+                     
+                      
+                        
+                         if(coinawre>=100){
+                          setTriggerSpin(true);
+      // 🔹 Then after 5 seconds: handle the win logic
+      setTimeout(() => {
+         handleWinLogic(corner, "corner");
+        setTriggerSpin(false);
+      }, 5000);
+                      //  handleWinLogic(initialState[i], "row", i);
+                        return;}
+                        else{
+                              handleWinLogic(corner, "corner");
+                            return;
+                        }
                     }
                 }
             } 
@@ -1064,8 +1278,21 @@ const shuffleArray = (array) => {
                     // Ensure the last called number is part of this corner
                     if (corner.includes(lastCalledNumber)) {
                         // Handle win logic for corners
-                        handleWinLogic(corner, "corner");
-                        return;
+                     
+
+                          if(coinawre>=100){
+                          setTriggerSpin(true);
+      // 🔹 Then after 5 seconds: handle the win logic
+      setTimeout(() => {
+       handleWinLogic(corner, "corner");
+        setTriggerSpin(false);
+      }, 5000);
+                      //  handleWinLogic(initialState[i], "row", i);
+                        return;}
+                        else{
+                             handleWinLogic(corner, "corner");
+                            return;
+                        }
                     }
                 }
             }
@@ -1092,7 +1319,17 @@ const shuffleArray = (array) => {
             setgamewinnerboard(true);
             setfireworklun(true);
             console.log(pattern);
-        } else {
+        }
+        else if (language === "amm") {
+            const win = getGameWiningmeamel();
+            win.play();
+           setresult("ዘግቷል")
+            setmarked(pattern);
+            setgamewinnerboard(true);
+            setfireworklun(true);
+            console.log(pattern);
+        }
+         else {
             const utterance = new SpeechSynthesisUtterance(`cartela number ${index} win`);
             window.speechSynthesis.speak(utterance);
             setresult("ዘግቷል")
@@ -1121,7 +1358,14 @@ const shuffleArray = (array) => {
             notwin.play();
             setresult("አልዘጋም");
            
-        } else {
+        }
+         else if (language === "amm") {
+            const notwin = playerNotwinm();
+            notwin.play();
+            setresult("አልዘጋም");
+           
+        }
+         else {
             let message = "you click wrong pattern";
             const utterance = new SpeechSynthesisUtterance(message);
            window.speechSynthesis.speak(utterance);
@@ -1142,6 +1386,9 @@ const shuffleArray = (array) => {
             }
            else if (language == "amf") {
                 gameisnotf();
+            }
+             else if (language == "amm") {
+                gameisnotm();
             }
             else {
                 const utterance = new SpeechSynthesisUtterance("the number is not in the list");
@@ -1260,7 +1507,10 @@ const shuffleArray = (array) => {
             getGameWining().play();
         } else if (language === "amf") {
             getGameWiningfeamel().play();
-        } else {
+        } else if (language === "amm") {
+            getGameWiningmeamel().play();
+        }
+        else {
             speak(message);// Handle other cases if needed
         }
     };
@@ -1284,7 +1534,10 @@ const shuffleArray = (array) => {
             playerNotwin().play();
         } else if (language === "amf") {
             playerNotwinf().play();
-        } else {
+        } else if (language === "amm") {
+            playerNotwinm().play();
+        }
+        else {
             speak("You clicked the wrong pattern.");// Handle other cases if needed
         }
     };
@@ -1333,6 +1586,7 @@ const shuffleArray = (array) => {
              <option value="en">English</option>
              <option value="am">Amharic Male</option>
              <option value="amf">Amharic FeMale</option>
+             <option value="amm">Amharic Human</option>
          </select>
      </div>}
          <div className="mainbody">
@@ -1360,6 +1614,7 @@ const shuffleArray = (array) => {
                      <button style={{ backgroundColor: "purple",fontWeight: "bold" ,fontSize: "48px"}}>O</button>
                  </div>
                  <div className="numbers-container">
+ 
                      {[...Array(75)].map((_, index) => {
                          const number = index + 1;
                          return (
@@ -1476,12 +1731,14 @@ const shuffleArray = (array) => {
 
 </div>
 
+
 </div>
 
    
        
         </div>
                  }
+                
                  <div className="net-pay1">
                      <div className="net-pay2">
                          <p>{winerAward || 'winner'}</p>
@@ -1503,6 +1760,7 @@ const shuffleArray = (array) => {
                          </div>
                      </div>
                  )}
+
                  {gamewinnerboard &&
    <div className="popupw" id="bingoPopup">
    <div className="popup-contentw">
@@ -1520,6 +1778,7 @@ const shuffleArray = (array) => {
 <div className="O">O</div>
 
 </div>
+
 <div className="playCartela3w">
    
    {carts2}
@@ -1535,6 +1794,7 @@ const shuffleArray = (array) => {
      </div>
      </div>
  </div>}
+ 
  {gamewinnerboard1 &&
    <div className="popupw" id="bingoPopup">
    <div className="popup-contentw">
@@ -1567,6 +1827,9 @@ const shuffleArray = (array) => {
      </div>
      </div>
  </div>}
+
+  
+
  {isShuffling && (
              <div className="shuffle-animation">
                  {Array.from({ length: 75 }, (_, i) => (
@@ -1576,6 +1839,34 @@ const shuffleArray = (array) => {
                  ))}
              </div>
          )}
+          {triggerSpin && (
+             <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        backgroundColor: 'rgba(0, 0, 0, 0.7)', // semi-transparent overlay
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 9999,
+      }}
+    >
+      <div style={{ width: '400px', height: '400px' }}>
+    <Spinner
+      trigger={triggerSpin}
+      onResult={(res) => {
+        setSpinResult(res);
+        setTriggerSpin(false);
+        console.log("Spinner Result:", res);
+      }}
+    />
+    </div>
+    </div>
+  )}
+ 
              </div>
 
          </div>

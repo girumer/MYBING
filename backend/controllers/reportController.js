@@ -1,62 +1,92 @@
 const reportController = async (req, res) => {
-    const player = req.player; // The player data is already attached by the middleware
-    const gameHistory = player.gameHistory || []; // Get the player's game history
-  
-    if (!gameHistory || gameHistory.length === 0) {
-      return res.status(404).json({ message: 'No game history found for this player' });
-    }
-  
-    try {
-      // Get today's date
-      const currentDate = new Date();
-      
-      // Get the start of the current day
-      const todayStart = new Date(new Date().setHours(0, 0, 0, 0));
-  
-      // Date intervals for weekly and monthly reports
-      const sevenDaysAgo = new Date(new Date().setDate(currentDate.getDate() - 7));
-      const oneMonthAgo = new Date(new Date().setMonth(currentDate.getMonth() - 1));
-  
-      // Filter game history for daily, weekly, and monthly reports
-      const dailyReport = gameHistory.filter(game => {
-        const gameDate = new Date(game.timestamp);
-        return gameDate >= todayStart && gameDate <= currentDate; // Filter games from today
+  const player = req.player;
+  const gameHistory = player.gameHistory || [];
+  const prizeHistory = Array.isArray(player.prize) ? player.prize : [];
+
+  if (!gameHistory.length && !prizeHistory.length) {
+    return res.status(404).json({ message: 'No data found for this player' });
+  }
+
+  try {
+    const now = new Date();
+
+    const startOfToday = new Date(now);
+    startOfToday.setHours(0, 0, 0, 0);
+
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - now.getDay());
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    const getAmount = (entry) => {
+      if (typeof entry === 'number') return entry;
+      if (typeof entry.prize === 'number') return entry.prize;
+      if (typeof entry.amount === 'number') return entry.amount;
+      return 0;
+    };
+
+    const filterByDate = (entries, startDate) => {
+      return entries.filter(entry => {
+        const timestamp = entry?.timestamp ? new Date(entry.timestamp) : null;
+        return timestamp && timestamp >= startDate && timestamp <= now;
       });
-  
-      const weeklyReport = gameHistory.filter(game => {
-        const gameDate = new Date(game.timestamp);
-        return gameDate >= sevenDaysAgo && gameDate <= currentDate; // Filter games from the last 7 days
-      });
-  
-      const monthlyReport = gameHistory.filter(game => {
-        const gameDate = new Date(game.timestamp);
-        return gameDate >= oneMonthAgo && gameDate <= currentDate; // Filter games from the last month
-      });
-  
-      // Helper function to calculate total profit and games, including period
-      const calculateReportData = (reportData, startDate, endDate, period) => {
-        const totalProfit = reportData.reduce((sum, game) => sum + game.profit, 0);
-        const totalGames = reportData.length;
-        return { totalProfit, totalGames, startDate, endDate, period };
+    };
+
+    const calculate = (games, prizes, startDate, label) => {
+      const totalGames = games.length;
+      const totalProfit = games.reduce((sum, game) => sum + (game.profit || 0), 0);
+      const totalBonus = prizes.reduce((sum, entry) => sum + getAmount(entry), 0);
+
+      return {
+        period: label,
+        startDate,
+        endDate: now,
+        totalGames,
+        totalProfit,
+        totalBonus
       };
-  
-      // Calculate daily, weekly, and monthly reports
-      const dailyStats = calculateReportData(dailyReport, todayStart, currentDate, 'daily');
-      const weeklyStats = calculateReportData(weeklyReport, sevenDaysAgo, currentDate, 'weekly');
-      const monthlyStats = calculateReportData(monthlyReport, oneMonthAgo, currentDate, 'monthly');
-  
-      // Format response with report data
-      res.json({
-        daily: dailyStats,
-        weekly: weeklyStats,
-        monthly: monthlyStats,
-      });
-  
-    } catch (error) {
-      console.error('Error generating report:', error);
-      res.status(500).json({ message: 'Server error' });
-    }
-  };
-  
-  module.exports = reportController;
-  
+    };
+
+    const dailyStats = calculate(
+      filterByDate(gameHistory, startOfToday),
+      filterByDate(prizeHistory, startOfToday),
+      startOfToday,
+      'daily'
+    );
+
+    const weeklyStats = calculate(
+      filterByDate(gameHistory, startOfWeek),
+      filterByDate(prizeHistory, startOfWeek),
+      startOfWeek,
+      'weekly'
+    );
+
+    const monthlyStats = calculate(
+      filterByDate(gameHistory, startOfMonth),
+      filterByDate(prizeHistory, startOfMonth),
+      startOfMonth,
+      'monthly'
+    );
+
+    // Log reports to the console
+    console.log('--- Player Report ---');
+    console.log('Daily Stats:', dailyStats);
+    console.log('Weekly Stats:', weeklyStats);
+    console.log('Monthly Stats:', monthlyStats);
+    console.log('---------------------');
+
+    // Send response
+    res.json({
+      daily: dailyStats,
+      weekly: weeklyStats,
+      monthly: monthlyStats,
+    });
+
+  } catch (error) {
+    console.error('Error generating report:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+module.exports = reportController;

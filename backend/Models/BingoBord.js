@@ -25,7 +25,7 @@ const BingoBordSchema = new mongoose.Schema({
     },
     password:{
         type:String,
-        required:true,
+        required:false,
     },
     role:{
         type:String,
@@ -36,6 +36,22 @@ const BingoBordSchema = new mongoose.Schema({
         default:1500,
 
     },
+    coin:{
+      type:Number,
+      default:0,
+    },
+ prize: [{
+    amount: {
+      type: Number,
+      required: true,
+    },
+    timestamp: {
+      type: Date,
+      default: Date.now,
+    }
+  }],
+
+
     gameHistory: [{
        
         gameId: { type: Number,default:0 },

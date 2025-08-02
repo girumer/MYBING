@@ -88,6 +88,7 @@ const Report = () => {
               <th>startDate</th>
               <th>endDate</th>
              <th>Total Profit</th>
+             <th>Bonus</th>
               <th>Total Games Played</th>
             </tr>
           </thead>
@@ -98,6 +99,7 @@ const Report = () => {
                 <td>{moment(report.startDate).format('MMMM Do YYYY')}</td>
                 <td>{moment(report.endDate).format('MMMM Do YYYY')}</td>
                 <td>{report.totalProfit}</td>
+                 <td>{report.totalBonus}</td>
                 <td>{report.totalGames}</td>
               </tr>
             ))}
@@ -115,6 +117,7 @@ const Report = () => {
               <th>startDate</th>
               <th>endDate</th>
               <th>Total Profit</th>
+              <th>Bonus</th>
               <th>Total Games Played</th>
             </tr>
           </thead>
@@ -125,6 +128,7 @@ const Report = () => {
                 <td>{moment(report.startDate).format('MMMM Do YYYY')}</td>
                 <td>{moment(report.endDate).format('MMMM Do YYYY')}</td>
                 <td>{report.totalProfit}</td>
+                 <td>{report.totalBonus}</td>
                 <td>{report.totalGames}</td>
               </tr>
             ))}
@@ -142,6 +146,7 @@ const Report = () => {
               <th>startDate</th>
               <th>endDate</th>
               <th>Total Profit</th>
+              <th>Bonus</th>
               <th>Total Games Played</th>
             </tr>
           </thead>
@@ -152,6 +157,7 @@ const Report = () => {
               <td>{moment(report.startDate).format('MMMM Do YYYY')}</td>
                 <td>{moment(report.endDate).format('MMMM Do YYYY')}</td>
                <td>{report.totalProfit}</td>
+                <td>{report.totalBonus}</td>
                 <td>{report.totalGames}</td>
               </tr>
             ))}
