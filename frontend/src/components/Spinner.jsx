@@ -36,16 +36,23 @@ useEffect(() => {
     setAngle(spinAngle);
     setSelectedIndex(index);
     const selectedPrize = prizes[index];
-
+playBonusAudio(selectedPrize);
     setTimeout(() => {
       console.log("Calling updatePrizeAfterSpin with:", { username, selectedPrize });
       updatePrizeAfterSpin(username, selectedPrize);
+      
       onResult(selectedPrize);
     }, 10000);
   } else if (trigger && !username) {
     console.warn("Username not loaded yet. Skipping prize update.");
   }
 }, [trigger, username]);
+const playBonusAudio = (value) => {
+  const audio = new Audio(`/bonus/${value}.m4a`);
+  audio.play().catch((err) => {
+    console.error(`Audio play for ${value} failed:`, err);
+  });
+};
 
 const updatePrizeAfterSpin = async (username, prizeWon) => {
   console.log("Backend URL:", BACKEND_URL);

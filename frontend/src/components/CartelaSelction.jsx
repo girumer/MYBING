@@ -35,7 +35,7 @@ function CartelaSelction() {
     const gametype = [
         { label: "one cheak", value: 1},
         { label: "two cheak", value: 2},
-        
+         { label: "full cheak", value: 3},
        
     ];
     const [selectegametype, setSelectgametype] = useState(1);
