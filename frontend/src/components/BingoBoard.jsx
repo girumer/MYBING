@@ -1347,7 +1347,122 @@ const shuffleArray = (array) => {
            
         }
     };
+     const cheakwin1 = async (initialState, num) => {
+        const calledNumbers = calledNumbersRef.current;
+        const lastCalledNumber = lastCalledNumberRef.current;
     
+        // Number is not part of the cartela
+        if (!cartelas.flat().includes(num)) {
+            if (language == "am") {
+                gameisnot();
+            }
+           else if (language == "amf") {
+                gameisnotf();
+            }
+            else {
+                const utterance = new SpeechSynthesisUtterance("the number is not in the list");
+                window.speechSynthesis.speak(utterance);
+            }
+            return;
+        }
+    
+        // Helper function to check if the last called number is in the pattern
+        const includesLastCalledNumber = (pattern) => pattern.includes(lastCalledNumber);
+    
+        // Fully marked rows
+        const fullyMarkedRows = initialState.filter(row =>
+            row.every(num => calledNumbers.includes(num) || num === '*')
+        );
+    
+        console.log("Fully marked rows: ", fullyMarkedRows); // Debugging
+    
+        // Fully marked columns
+        const fullyMarkedColumns = [];
+        for (let i = 0; i < 5; i++) {
+            const column = initialState.map(row => row[i]);
+            if (column.every(num => calledNumbers.includes(num) || num === '*')) {
+                fullyMarkedColumns.push(column);
+            }
+        }
+    
+        console.log("Fully marked columns: ", fullyMarkedColumns); // Debugging
+    
+        // Fully marked diagonals (accounting for the middle `*`)
+        const diagonals = [
+            [initialState[0][0], initialState[1][1], initialState[2][2], initialState[3][3], initialState[4][4]],
+            [initialState[0][4], initialState[1][3], initialState[2][2], initialState[3][1], initialState[4][0]],
+        ];
+    
+        const fullyMarkedDiagonals = diagonals.filter(diagonal =>
+            diagonal.every(num => num === '*' || calledNumbers.includes(num))
+        );
+    
+        console.log("Fully marked diagonals: ", fullyMarkedDiagonals); // Debugging
+    
+        // Fully marked corners
+        const corners = [initialState[0][0], initialState[0][4], initialState[4][0], initialState[4][4]];
+        const cornersWin = corners.every(num => calledNumbers.includes(num) || num === '*');
+    
+        console.log("Corners Win: ", cornersWin); // Debugging
+    
+        // Last called number validation for two rows, columns, or diagonals
+        if (fullyMarkedRows.length >= 2 && 
+            (fullyMarkedRows.some(row => includesLastCalledNumber(row)))) {
+            return declareWin("Two rows are fully marked!", fullyMarkedRows.flat());
+        }
+    
+        if (fullyMarkedColumns.length >= 2 && 
+            (fullyMarkedColumns.some(col => includesLastCalledNumber(col)))) {
+            return declareWin("Two columns are fully marked!", fullyMarkedColumns.flat());
+        }
+    
+        if (fullyMarkedDiagonals.length >= 2 && 
+            (fullyMarkedDiagonals.some(diagonal => includesLastCalledNumber(diagonal)))) {
+            return declareWin("Two diagonals are fully marked!", fullyMarkedDiagonals.flat());
+        }
+    
+        // Row + Diagonal Win (ensure last called number is in either the row or diagonal)
+        if (fullyMarkedRows.length >= 1 && fullyMarkedDiagonals.length >= 1 &&
+            (fullyMarkedRows.some(row => includesLastCalledNumber(row)) || 
+            fullyMarkedDiagonals.some(diagonal => includesLastCalledNumber(diagonal)))) {
+            return declareWin("One row and one diagonal are fully marked!", [...fullyMarkedRows.flat(), ...fullyMarkedDiagonals.flat()]);
+        }
+    
+        // Column + Diagonal Win (ensure last called number is in either the column or diagonal)
+        if (fullyMarkedColumns.length >= 1 && fullyMarkedDiagonals.length >= 1 &&
+            (fullyMarkedColumns.some(col => includesLastCalledNumber(col)) || 
+            fullyMarkedDiagonals.some(diagonal => includesLastCalledNumber(diagonal)))) {
+            return declareWin("One column and one diagonal are fully marked!", [...fullyMarkedColumns.flat(), ...fullyMarkedDiagonals.flat()]);
+        }
+    
+        // For combinations of one row and one column, one row and one diagonal, etc., no need for the last called number check
+        if (fullyMarkedRows.length >= 1 && fullyMarkedColumns.length >= 1 &&
+            (fullyMarkedRows.some(row => includesLastCalledNumber(row)) || 
+            fullyMarkedColumns.some(col => includesLastCalledNumber(col)))) {
+            return declareWin("One row and one column are fully marked!", [...fullyMarkedRows.flat(), ...fullyMarkedColumns.flat()]);
+        }
+    
+        if (fullyMarkedRows.length >= 1 && fullyMarkedDiagonals.length >= 1 &&
+            (fullyMarkedRows.some(row => includesLastCalledNumber(row)) || 
+            fullyMarkedDiagonals.some(diagonal => includesLastCalledNumber(diagonal)))) {
+            return declareWin("One row and one diagonal are fully marked!", [...fullyMarkedRows.flat(), ...fullyMarkedDiagonals.flat()]);
+        }
+    
+        if (fullyMarkedColumns.length >= 1 && fullyMarkedDiagonals.length >= 1 &&
+            (fullyMarkedColumns.some(col => includesLastCalledNumber(col)) || 
+            fullyMarkedDiagonals.some(diagonal => includesLastCalledNumber(diagonal)))) {
+            return declareWin("One column and one diagonal are fully marked!", [...fullyMarkedColumns.flat(), ...fullyMarkedDiagonals.flat()]);
+        }
+    
+        if (cornersWin) return declareWin("Four corners are fully marked!", corners);
+    
+        console.log("fully marked rows", fullyMarkedRows.length);
+        console.log("fully marked columns", fullyMarkedColumns.length);
+        console.log("fully marked diagonals", fullyMarkedDiagonals.length);
+    
+        // Notify if no win is found
+        notifyNoWin(initialState);
+    };
     const handleNoWin = (initialState, num) => {
         const calledNumbers = calledNumbersRef.current;
         const marked1 = initialState
@@ -1381,117 +1496,7 @@ const shuffleArray = (array) => {
         }
     };
     
-  const cheakwin1 = async (initialState, num) => {
-  const calledNumbers = calledNumbersRef.current;
-  const lastCalledNumber = lastCalledNumberRef.current;
-  const shouldSpin = coinawre >= 100 || numberCallLength <= 10;
-
-  // 🔹 Check if number is on the card
-  if (!cartelas.flat().includes(num)) {
-    if (language === "am") gameisnot();
-    else if (language === "amf") gameisnotf();
-    else if (language === "amm") gameisnotm();
-    else {
-      const utterance = new SpeechSynthesisUtterance("the number is not in the list");
-      window.speechSynthesis.speak(utterance);
-    }
-    return;
-  }
-
-  const includesLastCalledNumber = (pattern) => pattern.includes(lastCalledNumber);
-
-  const fullyMarkedRows = initialState.filter(row =>
-    row.every(num => calledNumbers.includes(num) || num === '*')
-  );
-
-  const fullyMarkedColumns = [];
-  for (let i = 0; i < 5; i++) {
-    const column = initialState.map(row => row[i]);
-    if (column.every(num => calledNumbers.includes(num) || num === '*')) {
-      fullyMarkedColumns.push(column);
-    }
-  }
-
-  const diagonals = [
-    [initialState[0][0], initialState[1][1], initialState[2][2], initialState[3][3], initialState[4][4]],
-    [initialState[0][4], initialState[1][3], initialState[2][2], initialState[3][1], initialState[4][0]],
-  ];
-  const fullyMarkedDiagonals = diagonals.filter(diagonal =>
-    diagonal.every(num => num === '*' || calledNumbers.includes(num))
-  );
-
-  const corners = [initialState[0][0], initialState[0][4], initialState[4][0], initialState[4][4]];
-  const cornersWin = corners.every(num => calledNumbers.includes(num) || num === '*');
-
-  // 🔹 Helper to delay declareWin if needed
-  const handleDeclaredWin = (message, cells) => {
-    if (shouldSpin) {
-      setTriggerSpin(true);
-      setTimeout(() => {
-        declareWin(message, cells);
-        setTriggerSpin(false);
-      }, 5000);
-    } else {
-      declareWin(message, cells);
-    }
-  };
-
-  // --- Win Conditions ---
-  if (fullyMarkedRows.length >= 2 && fullyMarkedRows.some(row => includesLastCalledNumber(row))) {
-    return handleDeclaredWin("Two rows are fully marked!", fullyMarkedRows.flat());
-  }
-
-  if (fullyMarkedColumns.length >= 2 && fullyMarkedColumns.some(col => includesLastCalledNumber(col))) {
-    return handleDeclaredWin("Two columns are fully marked!", fullyMarkedColumns.flat());
-  }
-
-  if (fullyMarkedDiagonals.length >= 2 && fullyMarkedDiagonals.some(diagonal => includesLastCalledNumber(diagonal))) {
-    return handleDeclaredWin("Two diagonals are fully marked!", fullyMarkedDiagonals.flat());
-  }
-
-  if (
-    fullyMarkedRows.length >= 1 &&
-    fullyMarkedDiagonals.length >= 1 &&
-    (fullyMarkedRows.some(row => includesLastCalledNumber(row)) ||
-      fullyMarkedDiagonals.some(diagonal => includesLastCalledNumber(diagonal)))
-  ) {
-    return handleDeclaredWin("One row and one diagonal are fully marked!", [
-      ...fullyMarkedRows.flat(),
-      ...fullyMarkedDiagonals.flat(),
-    ]);
-  }
-
-  if (
-    fullyMarkedColumns.length >= 1 &&
-    fullyMarkedDiagonals.length >= 1 &&
-    (fullyMarkedColumns.some(col => includesLastCalledNumber(col)) ||
-      fullyMarkedDiagonals.some(diagonal => includesLastCalledNumber(diagonal)))
-  ) {
-    return handleDeclaredWin("One column and one diagonal are fully marked!", [
-      ...fullyMarkedColumns.flat(),
-      ...fullyMarkedDiagonals.flat(),
-    ]);
-  }
-
-  if (
-    fullyMarkedRows.length >= 1 &&
-    fullyMarkedColumns.length >= 1 &&
-    (fullyMarkedRows.some(row => includesLastCalledNumber(row)) ||
-      fullyMarkedColumns.some(col => includesLastCalledNumber(col)))
-  ) {
-    return handleDeclaredWin("One row and one column are fully marked!", [
-      ...fullyMarkedRows.flat(),
-      ...fullyMarkedColumns.flat(),
-    ]);
-  }
-
-  if (cornersWin && corners.includes(lastCalledNumber)) {
-    return handleDeclaredWin("Four corners are fully marked!", corners);
-  }
-
-  // ❌ No win
-  notifyNoWin(initialState);
-};
+ 
 
    
     const cheakwinfull = async (initialState, num) => {
