@@ -36,7 +36,7 @@ function App() {
           <Route path="/qazxsw" element={<AdminSignup/>}/>
            <Route path="/AdminPasswordReset" element={<AdminPasswordReset/>}/>
           
-          <Route path="/Logins"  element={<Logins/>}/>
+          <Route path="/Logins"  element={<Signups/>}/>
           <Route path="/signups" element={<Signups /> }/>
           {/* protected toutes*/ }
           <Route element={<ProtectedRoute/>}>
