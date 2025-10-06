@@ -42,41 +42,49 @@ const server=http.createServer(app);
 app.use(bodyParser.json());
 
 
+// ... (Lines 1-52 remain the same, including the allowedOrigins array definition)
+
 const allowedOrigins = [
-  'http://localhost:3000',        // Dev HTTP
-  'https://localhost:3000',       // Dev HTTPS
-  'http://167.235.140.218',       // IP if needed
-  'https://new.adeyebingo.com',   // New subdomain frontend
-  'https://newapi.adeyebingo.com', // Optional new API
-   /\.adeyebingo\.com$/  // regex allows all subdomains and main domain
+  'http://localhost:3000',        
+  'https://localhost:3000',       
+  'http://167.235.140.218',       
+  'https://new.adeyebingo.com',   
+  'https://newapi.adeyebingo.com',
+  /\.adeyebingo\.com$/  
 ];
 
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-}));
+// ------------------------------------------------------------------
+// STEP 1: CONSOLIDATE & REPLACE ALL app.use(cors) BLOCKS WITH THIS ONE
+// ------------------------------------------------------------------
 
 app.use(cors({
   origin: function (origin, callback) {
-    // Allow requests with no 'origin' (e.g., mobile apps, Postman)
-    if (!origin) return callback(null, true);
-
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true); // Allow this origin
+    // Logic to allow undefined origin (like postman or curl) OR 
+    // allow if origin is in the list OR matches the regex
+    const isAllowed = !origin || allowedOrigins.includes(origin) || 
+                      allowedOrigins.some(re => re instanceof RegExp && re.test(origin));
+    
+    if (isAllowed) {
+      callback(null, true); 
     } else {
-      callback(new Error('CORS not allowed')); // Block others
+      callback(new Error('CORS not allowed for origin: ' + origin)); 
     }
   },
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allow OPTIONS
-  allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
-  credentials: true, // Allow cookies to be sent
+  // COMBINED OPTIONS from your two original blocks:
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // All methods needed
+  allowedHeaders: ['Content-Type', 'Authorization'], // All headers needed
+  credentials: true, // Crucial for cookies
 }));
+
+// ------------------------------------------------------------------
+// STEP 2: KEEP THE PRE-FLIGHT HANDLER
+// ------------------------------------------------------------------
+
+// Enable handling of OPTIONS requests (for preflight)
+app.options('*', cors()); 
+
+// ------------------------------------------------------------------
+// ... (The rest of your app.js code remains the same)
 
 // Enable handling of OPTIONS requests (for preflight)
 app.options('*', cors()); // Automatically handle OPTIONS requests
