@@ -43,26 +43,14 @@ app.use(bodyParser.json());
 
 
 const allowedOrigins = [
-  'http://localhost:3000',
-
-  //          // Development URL
-  'https://localhost:3000',        // Development URL with HTTPS
-  'http://167.235.140.218',        // IP address (if needed)
-  'http://adeyebingo.com',         // Production domain with HTTP
-  'https://adeyebingo.com',        // Production domain with HTTPS
-  'http://www.adeyebingo.com',     // www version with HTTP
-  'https://www.adeyebingo.com',//      // www version with HTTPS
-
-  'http://167.235.140.218',
-  'http://adeyebingo.com',
-  'https://adeyebingo.com',
-  'http://www.adeyebingo.com',
-  'https://www.adeyebingo.com',
-
-  'https://api.adeyebingo.com',
-  
-
+  'http://localhost:3000',        // Dev HTTP
+  'https://localhost:3000',       // Dev HTTPS
+  'http://167.235.140.218',       // IP if needed
+  'https://new.adeyebingo.com',   // New subdomain frontend
+  'https://newapi.adeyebingo.com', // Optional new API
+   /\.adeyebingo\.com$/  // regex allows all subdomains and main domain
 ];
+
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
